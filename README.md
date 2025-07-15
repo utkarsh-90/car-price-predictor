@@ -1,7 +1,7 @@
 # Car Price Predictor 
 
 Predict your used car’s price in seconds, right in your browser.  
-This is a simple Flask web app powered by machine learning—just enter your car details and get an instant price estimate.
+This is a simple Flask web app powered by machine learning just enter your car details and get an instant price estimate.
 
 ---
 
