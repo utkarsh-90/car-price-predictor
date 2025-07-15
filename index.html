@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Car Price Predictor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #23272b;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .predictor-card {
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.16);
+      max-width: 430px;
+      width: 100%;
+      padding: 2.2rem 2.2rem 1.5rem 2.2rem;
+      background: #fff;
+      margin: 0 auto;
+    }
+    .predictor-title {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #1b2330;
+    }
+    .form-label {
+      font-weight: 500;
+      color: #273040;
+    }
+    .form-select, .form-control {
+      border-radius: 0.8rem !important;
+      font-size: 1.08rem;
+      min-height: 42px;
+      margin-bottom: 1.2rem;
+    }
+    .btn-primary, .btn-secondary {
+      border-radius: 0.8rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding-top: 0.66rem;
+      padding-bottom: 0.66rem;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.2rem;
+      margin-bottom: 0.2rem;
+    }
+    .alert {
+      border-radius: 0.8rem;
+      font-size: 1.11rem;
+      margin-top: 1.4rem;
+    }
+    @media (max-width: 480px) {
+      .predictor-card {
+        padding: 1.2rem 0.6rem;
+        max-width: 97vw;
+      }
+      .btn-row {
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="predictor-card">
+    <div class="predictor-title">Car Price Predictor</div>
+    <form method="post" action="#">
+      <label for="company" class="form-label">Select Company</label>
+      <select name="company" id="company" class="form-select" required>
+        <option value="">Choose company</option>
+        {% for comp in companies %}
+        <option value="{{ comp }}" {% if form_values.company == comp %}selected{% endif %}>{{ comp }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="car_model" class="form-label">Select Car Model</label>
+      <select name="car_model" id="car_model" class="form-select" required>
+        <option value="">Choose model</option>
+      </select>
+
+      <label for="year" class="form-label">Select Year</label>
+      <select name="year" id="year" class="form-select" required>
+        <option value="">Choose year</option>
+        {% for y in year %}
+        <option value="{{ y }}" {% if form_values.year == y|string %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="fuel_type" class="form-label">Select Fuel Type</label>
+      <select name="fuel_type" id="fuel_type" class="form-select" required>
+        <option value="">Choose fuel type</option>
+        {% for ft in fuel_type %}
+        <option value="{{ ft }}" {% if form_values.fuel_type == ft %}selected{% endif %}>{{ ft }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="kilo_driven" class="form-label">Enter Kilometers Driven</label>
+      <input type="number" min="0" name="kilo_driven" id="kilo_driven" class="form-control" placeholder="e.g. 45000" required value="{{ form_values.kilo_driven }}" />
+
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary flex-fill">Predict</button>
+        <a href="/" class="btn btn-secondary flex-fill">New Prediction</a>
+      </div>
+      {% if prediction %}
+      <div class="alert alert-success text-center" id="result">
+        <strong>Result:</strong>
+        <p>{{ prediction }}</p>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <script>
+    const companyModels = {{ company_models | tojson }};
+    const companySelect = document.getElementById('company');
+    const modelSelect = document.getElementById('car_model');
+    const prevCompany = "{{ form_values.company }}";
+    const prevModel = "{{ form_values.car_model }}";
+
+    // Function to fill model dropdown
+    function populateModels(selectedCompany, selectedModel) {
+      modelSelect.innerHTML = '<option value="">Choose model</option>';
+      if (companyModels[selectedCompany]) {
+        companyModels[selectedCompany].forEach(function(model) {
+          const option = document.createElement('option');
+          option.value = model;
+          option.textContent = model;
+          if (model === selectedModel) option.selected = true;
+          modelSelect.appendChild(option);
+        });
+      }
+    }
+
+    // On load, pre-fill if needed
+    if (prevCompany) {
+      populateModels(prevCompany, prevModel);
+    }
+
+    companySelect.addEventListener('change', function() {
+      populateModels(this.value, "");
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
